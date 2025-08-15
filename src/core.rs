@@ -3,6 +3,7 @@ use clipboard_rs::{Clipboard, ClipboardContext, common::RustImage};
 use sha2::{Digest, Sha256};
 use std::process::Command;
 use image::{ImageFormat, DynamicImage};
+use anyhow::anyhow;
 
 use crate::Result;
 
@@ -28,7 +29,7 @@ pub fn capture_clipboard_image(lossless: bool) -> Result<String> {
     // compute PNG bytes once (used for hashing and/or saving)
     let img_data = clipboard_img
         .to_png()
-        .map_err(|e| format!("Failed to convert image to PNG: {}", e))?;
+        .map_err(|e| anyhow!("Failed to convert image to PNG: {}", e))?;
     let png_bytes = img_data.get_bytes();
 
     // fast, deterministic short hash from PNG bytes
@@ -46,7 +47,7 @@ pub fn capture_clipboard_image(lossless: bool) -> Result<String> {
     } else {
         // decode once from PNG bytes, then save as JPEG (85% quality)
         let img = image::load_from_memory_with_format(png_bytes, ImageFormat::Png)
-            .map_err(|e| format!("Failed to load image: {}", e))?;
+            .map_err(|e| anyhow!("Failed to load image: {}", e))?;
         let filename = format!("{}.jpg", short_hash);
         let file_path = downloads_dir.join(filename);
         
@@ -64,7 +65,7 @@ pub fn open_in_finder(file_path: &str) -> Result<()> {
         .arg("-R")
         .arg(file_path)
         .spawn()
-        .map_err(|e| format!("Failed to open Finder: {}", e))?;
+        .map_err(|e| anyhow!("Failed to open Finder: {}", e))?;
     Ok(())
 }
 
@@ -75,10 +76,10 @@ pub fn open_in_finder(_file_path: &str) -> Result<()> { Ok(()) }
 // get image from system clipboard
 fn get_clipboard_image() -> Result<impl RustImage> {
     let ctx = ClipboardContext::new()
-        .map_err(|e| format!("Failed to create clipboard context: {}", e))?;
+        .map_err(|e| anyhow!("Failed to create clipboard context: {}", e))?;
     let img = ctx
         .get_image()
-        .map_err(|_| "No image found in clipboard")?;
+        .map_err(|_| anyhow!("No image found in clipboard"))?;
     Ok(img)
 }
 
@@ -98,12 +99,12 @@ fn save_as_jpeg(img: &DynamicImage, file_path: &std::path::Path) -> Result<()> {
     use std::io::BufWriter;
     
     let file = File::create(file_path)
-        .map_err(|e| format!("Failed to create file: {}", e))?;
+        .map_err(|e| anyhow!("Failed to create file: {}", e))?;
     let writer = BufWriter::new(file);
     
     let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(writer, 85);
     encoder.encode_image(img)
-        .map_err(|e| format!("Failed to encode JPEG: {}", e))?;
+        .map_err(|e| anyhow!("Failed to encode JPEG: {}", e))?;
     
     Ok(())
 }
