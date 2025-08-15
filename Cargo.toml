@@ -1,0 +1,22 @@
+[package]
+name = "pasteimg"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+readme = "README.md"
+
+[[bin]]
+name = "pasteimg"
+path = "src/main.rs"
+
+[dependencies]
+clipboard-rs = "0.2"
+sha2 = "0.10"
+clap = { version = "4.5", features = ["derive"] }
+image = "0.25"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
