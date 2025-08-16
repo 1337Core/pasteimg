@@ -11,12 +11,12 @@ Tiny CLI that saves the current clipboard image to `~/Downloads` as a JPEG (defa
 cargo build --release
 ```
 
- - Binary output: `target/release/pasteimg`
+ - Binary output: `target/aarch64-apple-darwin/release/pasteimg`
  - Apple Silicon default: builds for `aarch64-apple-darwin`. For Intel Macs: `cargo build --release --target x86_64-apple-darwin`.
  - install into your `PATH` (may require `sudo`):
 
 ```
-mv target/release/pasteimg /usr/local/bin/
+mv target/aarch64-apple-darwin/release/pasteimg /usr/local/bin/
 ```
 
 ## Usage
