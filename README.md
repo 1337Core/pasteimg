@@ -1,8 +1,8 @@
 # pasteimg
 
-tiny cli that saves the current clipboard image to your downloads folder as jpeg (default) or png (with `--lossless`). on macos, the saved file is revealed in finder.
+tiny cli that saves the current clipboard image to your downloads folder as a slightly compressed jpeg or lossless png (with `--lossless`). the saved file is then revealed in finder.
 
-## platform
+## requirements
 - macos only
 
 ## installation
@@ -26,4 +26,4 @@ pasteimg --lossless
 ```
 
 ## license
-- mit — see the `license` file.
+- mit — see `license`
