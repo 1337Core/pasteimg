@@ -1,36 +1,29 @@
 # pasteimg
 
-Tiny CLI that saves the current clipboard image to `~/Downloads` as a JPEG (default) or PNG (with `--lossless`). The file name is a short, deterministic 5‑char SHA‑256 prefix. On macOS, the saved file is revealed in Finder.
+tiny cli that saves the current clipboard image to your downloads folder as jpeg (default) or png (with `--lossless`). on macos, the saved file is revealed in finder.
 
-## Platform
-- macOS only. Relies on Finder integration and assumes a `~/Downloads` directory.
+## platform
+- macos only
 
-## Installation
+## installation
 
 ```
 cargo build --release
 ```
 
- - Binary output: `target/aarch64-apple-darwin/release/pasteimg`
- - Apple Silicon default: builds for `aarch64-apple-darwin`. For Intel Macs: `cargo build --release --target x86_64-apple-darwin`.
- - install into your `PATH` (may require `sudo`):
+ - binary output: `target/aarch64-apple-darwin/release/pasteimg`
+ - apple silicon default: builds for `aarch64-apple-darwin`. for intel macs: `cargo build --release --target x86_64-apple-darwin`.
+ - install into your `path` (may require `sudo`):
 
 ```
 mv target/aarch64-apple-darwin/release/pasteimg /usr/local/bin/
 ```
 
-## Usage
+## usage
 ```
-pasteimg           # saves clipboard image as JPEG
-pasteimg --lossless  # saves clipboard image as PNG
+pasteimg
+pasteimg --lossless
 ```
 
-## Behavior
-- Reads the current image from the clipboard.
-- Saves to `~/Downloads/<hash>.jpg` by default, or `~/Downloads/<hash>.png` with the `--lossless` flag.
-- Reveals the saved file in Finder.
-- Local-only: reads the clipboard and writes to disk; no network access.
- - Overwrite note: files with the same 5‑char hash overwrite existing ones.
-
-## License
-- MIT — see the `LICENSE` file for details.
+## license
+- mit — see the `license` file.
