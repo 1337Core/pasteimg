@@ -41,4 +41,4 @@ pasteimg --lossless
 ```
 
 ## license
-- mit — see `license`
+- mit `license`
