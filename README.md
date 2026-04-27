@@ -28,7 +28,7 @@ cargo build --release
 
  - binary output: `target/release/pasteimg`
  - to cross-build for another mac architecture, pass an explicit target, for example `cargo build --release --target x86_64-apple-darwin`.
- - install into your `path` (may require `sudo`):
+ - install into your `path` (requires `sudo`):
 
 ```
 mv target/release/pasteimg /usr/local/bin/
