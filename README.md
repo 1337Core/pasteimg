@@ -10,13 +10,14 @@ tiny cli that saves the current clipboard image to your downloads folder as a sl
 ### homebrew
 
 ```sh
-brew install --formula https://raw.githubusercontent.com/1337Core/pasteimg/main/Formula/pasteimg.rb
+brew tap 1337Core/pasteimg https://github.com/1337Core/pasteimg
+brew install pasteimg
 ```
 
 to install the latest commit from `main` instead of the latest tagged release:
 
 ```sh
-brew install --HEAD --formula https://raw.githubusercontent.com/1337Core/pasteimg/main/Formula/pasteimg.rb
+brew install --HEAD pasteimg
 ```
 
 ### from source
