@@ -7,16 +7,30 @@ tiny cli that saves the current clipboard image to your downloads folder as a sl
 
 ## installation
 
+### homebrew
+
+```sh
+brew install --formula https://raw.githubusercontent.com/1337Core/pasteimg/main/Formula/pasteimg.rb
+```
+
+to install the latest commit from `main` instead of the latest tagged release:
+
+```sh
+brew install --HEAD --formula https://raw.githubusercontent.com/1337Core/pasteimg/main/Formula/pasteimg.rb
+```
+
+### from source
+
 ```
 cargo build --release
 ```
 
- - binary output: `target/aarch64-apple-darwin/release/pasteimg`
- - apple silicon default: builds for `aarch64-apple-darwin`. for intel macs: `cargo build --release --target x86_64-apple-darwin`.
+ - binary output: `target/release/pasteimg`
+ - to cross-build for another mac architecture, pass an explicit target, for example `cargo build --release --target x86_64-apple-darwin`.
  - install into your `path` (may require `sudo`):
 
 ```
-mv target/aarch64-apple-darwin/release/pasteimg /usr/local/bin/
+mv target/release/pasteimg /usr/local/bin/
 ```
 
 ## usage
