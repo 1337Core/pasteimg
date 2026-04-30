@@ -9,7 +9,7 @@ use std::process::Command;
 use crate::Result;
 
 const JPEG_QUALITY: u8 = 85;
-const HASH_PREFIX_LEN: usize = 5;
+const HASH_PREFIX_LEN: usize = 8;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OutputFormat {
@@ -68,7 +68,10 @@ pub fn build_output(png_bytes: &[u8], format: OutputFormat) -> Result<(String, V
     let filename = format!("{}.{}", short_hash, format.extension());
 
     let output_bytes = match format {
-        OutputFormat::Png => png_bytes.to_vec(),
+        OutputFormat::Png => {
+            validate_png_bytes(png_bytes)?;
+            png_bytes.to_vec()
+        }
         OutputFormat::Jpeg => encode_jpeg_from_png(png_bytes)?,
     };
 
@@ -137,6 +140,12 @@ fn encode_jpeg_from_png(png_bytes: &[u8]) -> Result<Vec<u8>> {
     Ok(output.into_inner())
 }
 
+fn validate_png_bytes(png_bytes: &[u8]) -> Result<()> {
+    image::load_from_memory_with_format(png_bytes, ImageFormat::Png)
+        .map(|_| ())
+        .map_err(|e| anyhow!("Invalid PNG input: {}", e))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -155,7 +164,10 @@ mod tests {
 
     #[test]
     fn hash_prefix_is_stable() {
-        assert_eq!(short_sha256_hex_prefix(b"hello", 5), "2cf24");
+        assert_eq!(
+            short_sha256_hex_prefix(b"hello", HASH_PREFIX_LEN),
+            "2cf24dba"
+        );
     }
 
     #[test]
@@ -164,7 +176,14 @@ mod tests {
         let (filename, bytes) = build_output(&png, OutputFormat::Png).unwrap();
 
         assert!(filename.ends_with(".png"));
+        assert_eq!(filename.trim_end_matches(".png").len(), HASH_PREFIX_LEN);
         assert_eq!(bytes, png);
+    }
+
+    #[test]
+    fn build_output_for_png_rejects_invalid_png() {
+        let err = build_output(b"not png data", OutputFormat::Png).unwrap_err();
+        assert!(err.to_string().contains("Invalid PNG input"));
     }
 
     #[test]

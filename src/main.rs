@@ -32,10 +32,7 @@ fn main() {
             loading_stop.store(true, Ordering::Relaxed);
             ui::clear_loading();
 
-            ui::success(&format!(
-                "Saved clipboard image to {}",
-                ui::path(&file_path)
-            ));
+            ui::success(&format!("Saved image to {}", ui::path(&file_path)));
 
             if let Err(e) = open_in_finder(&file_path) {
                 ui::warn(&format!("{}", e));

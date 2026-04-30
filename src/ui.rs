@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 const SPINNER_FRAMES: [&str; 10] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-const SPINNER_MESSAGE: &str = "Processing clipboard image";
+const SPINNER_MESSAGE: &str = "Processing image";
 
 fn color(code: &str, content: &str) -> String {
     format!("\x1b[{}m{}\x1b[0m", code, content)
