@@ -10,7 +10,7 @@ name = "pasteimg"
 path = "src/main.rs"
 
 [dependencies]
-clipboard-rs = "0.2"
+clipboard-rs = "0.3"
 sha2 = "0.10"
 clap = { version = "4.5", features = ["derive"] }
 image = "0.25"
