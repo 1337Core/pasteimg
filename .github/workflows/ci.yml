@@ -17,9 +17,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
 
     steps:
       - name: checkout
@@ -29,6 +31,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+          targets: ${{ matrix.target }}
 
       - name: cache cargo
         uses: Swatinem/rust-cache@v2
@@ -37,7 +40,7 @@ jobs:
         run: cargo fmt --check
 
       - name: lint
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --target ${{ matrix.target }} --all-targets -- -D warnings
 
       - name: test
-        run: cargo test
+        run: cargo test --target ${{ matrix.target }}

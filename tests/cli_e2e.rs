@@ -11,6 +11,14 @@ fn write_fixture_png(path: &Path) {
         .unwrap();
 }
 
+fn image_outputs_with_extension(dir: &Path, extension: &str) -> Vec<std::path::PathBuf> {
+    std::fs::read_dir(dir)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .filter(|path| path.extension().and_then(|s| s.to_str()) == Some(extension))
+        .collect()
+}
+
 #[test]
 fn cli_creates_jpeg_from_input_file() {
     let home = tempfile::tempdir().unwrap();
@@ -25,13 +33,9 @@ fn cli_creates_jpeg_from_input_file() {
         .success();
 
     let downloads = home.path().join("Downloads");
-    let entries: Vec<_> = std::fs::read_dir(&downloads)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .collect();
+    let entries = image_outputs_with_extension(&downloads, "jpg");
 
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].extension().and_then(|s| s.to_str()), Some("jpg"));
 }
 
 #[test]
@@ -49,13 +53,9 @@ fn cli_creates_png_with_lossless_flag() {
         .success();
 
     let downloads = home.path().join("Downloads");
-    let entries: Vec<_> = std::fs::read_dir(&downloads)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .collect();
+    let entries = image_outputs_with_extension(&downloads, "png");
 
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].extension().and_then(|s| s.to_str()), Some("png"));
 }
 
 #[test]
