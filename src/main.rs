@@ -1,5 +1,6 @@
 use clap::Parser;
-use pasteimg::{capture_clipboard_image, open_in_finder};
+use pasteimg::{capture_clipboard_image, capture_image_from_png_path, open_in_finder};
+use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 
 mod ui;
@@ -10,6 +11,10 @@ mod ui;
 struct Args {
     #[arg(long)]
     lossless: bool,
+
+    /// Load PNG bytes from a file instead of the clipboard (useful for automation/tests).
+    #[arg(long, value_name = "PATH")]
+    input: Option<PathBuf>,
 }
 
 fn main() {
@@ -17,15 +22,17 @@ fn main() {
 
     let loading_stop = ui::loading_bar();
 
-    match capture_clipboard_image(args.lossless) {
+    let result = match args.input {
+        Some(path) => capture_image_from_png_path(&path, args.lossless),
+        None => capture_clipboard_image(args.lossless),
+    };
+
+    match result {
         Ok(file_path) => {
             loading_stop.store(true, Ordering::Relaxed);
             ui::clear_loading();
 
-            ui::success(&format!(
-                "Saved clipboard image to {}",
-                ui::path(&file_path)
-            ));
+            ui::success(&format!("Saved image to {}", ui::path(&file_path)));
 
             if let Err(e) = open_in_finder(&file_path) {
                 ui::warn(&format!("{}", e));
