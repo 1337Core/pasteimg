@@ -1,29 +1,32 @@
 use std::io::Write;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
-fn c(code: &str, s: &str) -> String {
-    format!("\x1b[{}m{}\x1b[0m", code, s)
+const SPINNER_FRAMES: [&str; 10] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+const SPINNER_MESSAGE: &str = "Processing clipboard image";
+
+fn color(code: &str, content: &str) -> String {
+    format!("\x1b[{}m{}\x1b[0m", code, content)
 }
 
-fn bold(s: &str) -> String {
-    c("1", s)
+fn bold(content: &str) -> String {
+    color("1", content)
 }
 
-fn green(s: &str) -> String {
-    c("32", s)
+fn green(content: &str) -> String {
+    color("32", content)
 }
 
-fn red(s: &str) -> String {
-    c("31", s)
+fn red(content: &str) -> String {
+    color("31", content)
 }
 
-fn yellow(s: &str) -> String {
-    c("33", s)
+fn yellow(content: &str) -> String {
+    color("33", content)
 }
 
-fn cyan(s: &str) -> String {
-    c("36", s)
+fn cyan(content: &str) -> String {
+    color("36", content)
 }
 
 pub fn path(p: &str) -> String {
@@ -31,18 +34,10 @@ pub fn path(p: &str) -> String {
 }
 
 pub fn loading_bar() -> Arc<AtomicBool> {
-    // returns a stop flag so the caller controls spinner lifetime
     let stop_flag = Arc::new(AtomicBool::new(false));
     let stop_flag_clone = Arc::clone(&stop_flag);
 
-    let spinner_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-
-    print!(
-        "\r{} {}",
-        cyan(spinner_chars[0]),
-        bold("Processing clipboard image")
-    );
-    std::io::stdout().flush().unwrap();
+    draw_spinner_frame(0);
 
     std::thread::spawn(move || {
         let mut frame = 1;
@@ -53,20 +48,23 @@ pub fn loading_bar() -> Arc<AtomicBool> {
                 break;
             }
 
-            print!(
-                "\r{} {}",
-                cyan(spinner_chars[frame % spinner_chars.len()]),
-                bold("Processing clipboard image")
-            );
-            std::io::stdout().flush().unwrap();
+            draw_spinner_frame(frame % SPINNER_FRAMES.len());
             frame += 1;
         }
 
-        print!("\r\x1b[K");
-        std::io::stdout().flush().unwrap();
+        clear_loading();
     });
 
     stop_flag
+}
+
+fn draw_spinner_frame(frame: usize) {
+    print!(
+        "\r{} {}",
+        cyan(SPINNER_FRAMES[frame]),
+        bold(SPINNER_MESSAGE)
+    );
+    std::io::stdout().flush().expect("failed to flush stdout");
 }
 
 pub fn success(msg: &str) {
@@ -83,7 +81,7 @@ pub fn warn(msg: &str) {
 
 pub fn clear_loading() {
     print!("\r\x1b[K");
-    std::io::stdout().flush().unwrap();
+    std::io::stdout().flush().expect("failed to flush stdout");
 }
 
 #[cfg(test)]
@@ -91,10 +89,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn styles_work() {
+    fn path_styling_contains_original_path() {
         assert!(path("/tmp").contains("/tmp"));
-        success("ok");
-        warn("warn");
-        error("err");
+    }
+
+    #[test]
+    fn spinner_stop_flag_can_be_set() {
+        let flag = loading_bar();
+        flag.store(true, Ordering::Relaxed);
+        clear_loading();
     }
 }
