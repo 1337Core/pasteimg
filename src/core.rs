@@ -121,8 +121,15 @@ fn read_clipboard_png_bytes() -> Result<Vec<u8>> {
 fn short_sha256_hex_prefix(data: &[u8], prefix_len: usize) -> String {
     let mut hasher = Sha256::new();
     hasher.update(data);
-    let hash = format!("{:x}", hasher.finalize());
-    hash.chars().take(prefix_len).collect()
+    hasher
+        .finalize()
+        .iter()
+        .take(prefix_len.div_ceil(2))
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>()
+        .chars()
+        .take(prefix_len)
+        .collect()
 }
 
 fn encode_jpeg_from_png(png_bytes: &[u8]) -> Result<Vec<u8>> {
