@@ -12,7 +12,7 @@ path = "src/main.rs"
 [dependencies]
 clipboard-rs = "0.3"
 sha2 = "0.11"
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "4.6", features = ["derive"] }
 image = "0.25"
 anyhow = "1"
 
